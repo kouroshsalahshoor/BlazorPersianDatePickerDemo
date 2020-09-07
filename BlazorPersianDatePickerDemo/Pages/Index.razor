@@ -1,0 +1,41 @@
+﻿@page "/"
+
+<h3>Blazor Farsi Date Range Picker Demo</h3>
+
+@*https://github.com/jdtcn/BlazorDateRangePicker*@
+
+<DateRangePicker @bind-StartDate="_startDate"
+                 MinDate="_minDate"
+                 MaxDate="_maxDate"
+                 SingleDatePicker="true"
+                 Culture="@(System.Globalization.CultureInfo.GetCultureInfo("fa-IR"))"
+                 placeholder="لطفا یک تاریخ را انتخاب نمائید" />
+
+<button @onclick="save" class="btn btn-primary">save</button>
+
+@code {
+    [Inject] public DateTimeService _dateTimeService { get; set; }
+    DateTimeOffset? _startDate { get; set; }
+    DateTimeOffset? _endDate { get; set; }
+
+    DateTimeOffset _minDate;
+    DateTimeOffset _maxDate;
+
+    protected override Task OnInitializedAsync()
+    {
+        var now = DateTime.Now;
+        var persianDate = _dateTimeService.GetPersianDateTime(now);
+
+        _minDate = new DateTimeOffset(persianDate.AddYears(-100));
+        _maxDate = new DateTimeOffset(persianDate.AddYears(100));
+
+        _startDate = new DateTimeOffset(persianDate);
+
+        return base.OnInitializedAsync();
+    }
+
+    void save()
+    {
+        var x = _dateTimeService.GetDateTime(_startDate.Value.DateTime);
+    }
+}
